@@ -8,36 +8,63 @@ import {
 } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { ReactElement, ReactNode, useEffect } from "react";
+import { ReactElement, ReactNode, useEffect, useRef } from "react";
 import { Markdown } from "tiptap-markdown";
+import { Subscript, Superscript } from "./tiptap-sub-sup";
+
+/** Convert the markdown `~...~` / `^...^` syntax to `<sub>` / `<sup>` HTML tags. */
+function markdownToHtml(value: string): string {
+  return value
+    .replaceAll(/~(.+?)~/g, "<sub>$1</sub>")
+    .replaceAll(/\^(.+?)\^/g, "<sup>$1</sup>");
+}
+
+/** Convert `<sub>` / `<sup>` HTML tags back to the markdown `~...~` / `^...^` syntax. */
+function htmlToMarkdown(value: string): string {
+  return value
+    .replaceAll(/<sub>(.+?)<\/sub>/g, "~$1~")
+    .replaceAll(/<sup>(.+?)<\/sup>/g, "^$1^");
+}
 
 export function MantineFhirInputMarkdown(
   props: FhirInputMarkdownRendererProps<MantineFhirInputMarkdownProps>,
 ): ReactElement | null {
+  // The last value emitted by the editor, used to avoid resetting the content (and the
+  // cursor position) when the parent re-renders with the value that we just emitted.
+  const lastEmittedValue = useRef<string | null | undefined>(props.value);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
       Link,
+      Superscript,
+      Subscript,
       Markdown.configure({
-        html: false,
+        html: true,
       }),
     ],
+    content: props.value ? markdownToHtml(props.value) : "",
     onUpdate: ({ editor }) => {
-      console.log(
-        "onChange",
-        editor.storage.markdown.getMarkdown() || undefined,
+      const markdown = htmlToMarkdown(
+        editor.storage.markdown.getMarkdown() || "",
       );
-      props.onChange?.(editor.storage.markdown.getMarkdown() || undefined);
+      const value = markdown.trim().length > 0 ? markdown : undefined;
+      lastEmittedValue.current = value;
+      props.onChange?.(value);
     },
   });
 
   useEffect(() => {
-    if (
-      editor &&
-      (props.value || "") !== editor.storage.markdown.getMarkdown()
-    ) {
-      editor.commands.setContent(props.value || "");
+    if (!editor) {
+      return;
     }
+
+    if (props.value === lastEmittedValue.current) {
+      return;
+    }
+
+    lastEmittedValue.current = props.value;
+    editor.commands.setContent(props.value ? markdownToHtml(props.value) : "");
   }, [editor, props.value]);
 
   return (
@@ -63,6 +90,8 @@ export function MantineFhirInputMarkdown(
                 <RichTextEditor.Italic />
                 <RichTextEditor.Strikethrough />
                 <RichTextEditor.ClearFormatting />
+                <RichTextEditor.Subscript />
+                <RichTextEditor.Superscript />
               </RichTextEditor.ControlsGroup>
 
               <RichTextEditor.ControlsGroup>
