@@ -52,6 +52,14 @@ export class FhirDefinitions {
             break;
           }
 
+          case "CodeSystem": {
+            definitions.codeSystemsByUrl.set(
+              parsed.url,
+              parsed as CodeSystemDefinition,
+            );
+            break;
+          }
+
           case "SearchParameter": {
             const searchParameter = Object.assign(
               new SearchParameter(),
@@ -93,9 +101,33 @@ export class FhirDefinitions {
 
   public structureDefinitionsByUrl = new Map<string, StructureDefinition>();
   public valueSetsByUrl = new Map<string, ValueSet>();
+  public codeSystemsByUrl = new Map<string, CodeSystemDefinition>();
   public searchParameters: SearchParameter[] = [];
   public searchParametersByResourceType = new Map<string, SearchParameter[]>();
   public operationDefinitions: OperationDefinition[] = [];
+
+  /**
+   * True if the loaded definitions already contain value set expansions.
+   *
+   * Some releases (e.g. R6) are published without inline expansions, in which case value sets
+   * have to be expanded from the CodeSystems they reference during code generation.
+   */
+  public get shipsValueSetExpansions(): boolean {
+    if (this._shipsValueSetExpansions === undefined) {
+      const valueSets = [...this.valueSetsByUrl.values()];
+      const expandedValueSets = valueSets.filter((valueSet) =>
+        Boolean((valueSet as any).expansion?.contains?.length),
+      );
+      // Some releases only embed a handful of example expansions: a release is considered
+      // as shipping expansions when most of its value sets have one.
+      this._shipsValueSetExpansions =
+        valueSets.length > 0 && expandedValueSets.length / valueSets.length > 0.1;
+    }
+
+    return this._shipsValueSetExpansions;
+  }
+
+  private _shipsValueSetExpansions: boolean | undefined;
 
   /**
    * All structure definitions sorted by name
@@ -120,6 +152,50 @@ export class FhirDefinitions {
    */
   public get domainResources(): StructureDefinition[] {
     return this.resources.filter((x) => x.isDomainResource);
+  }
+
+  /**
+   * Resolve the base TypeScript type name for a structure definition URL.
+   *
+   * Profiles (e.g. constraints) do not get generated types of their own: the type of the
+   * structure definition they constrain is used instead.
+   */
+  public resolveStructureDefinitionTypeName(url: string): string | undefined {
+    return this._resolveStructureDefinitionTypeName(url, new Set());
+  }
+
+  private _resolveStructureDefinitionTypeName(
+    url: string | undefined,
+    visited: Set<string>,
+  ): string | undefined {
+    if (!url) {
+      return undefined;
+    }
+
+    if (visited.has(url)) {
+      return undefined;
+    }
+    visited.add(url);
+
+    const structureDefinition = this.structureDefinitionsByUrl.get(url);
+    if (!structureDefinition) {
+      return url.replace("http://hl7.org/fhir/StructureDefinition/", "");
+    }
+
+    const definition = structureDefinition as any;
+    // Profiles are generated as interfaces extending their base type, so the base type name is
+    // the one to reference. Abstract types (e.g. Resource) keep their own name.
+    if (definition.derivation === "constraint") {
+      const baseName = this._resolveStructureDefinitionTypeName(
+        definition.baseDefinition,
+        visited,
+      );
+      if (baseName) {
+        return baseName;
+      }
+    }
+
+    return definition.type;
   }
 
   /**
@@ -456,7 +532,10 @@ export class ElementDefinition {
       ?.map((x: any) => {
         const tsType = toTsType(x.code);
         if (tsType === "Reference") {
-          const targetTypes = targetProfileToTsTypes(x.targetProfile);
+          const targetTypes = targetProfileToTsTypes(
+            x.targetProfile,
+            (url) => this._definitions.resolveStructureDefinitionTypeName(url),
+          );
           if (targetTypes) {
             return `Reference<${targetTypes}>`;
           }
@@ -571,12 +650,45 @@ export class ValueSet {
           ? undefined
           : (this as any).description,
       ]),
-      ...((this as any).expansion?.contains?.length
-        ? (this as any).expansion.contains.map(
-            (x: any) => `- ${x.code}: ${x.display}`,
-          )
-        : []),
+      ...this.concepts.map((x) =>
+        x.display ? `- ${x.code}: ${x.display}` : `- ${x.code}`,
+      ),
     ]);
+  }
+
+  /**
+   * The codes that this value set is composed of.
+   *
+   * Some FHIR releases (e.g. R6) are published without inline value set expansions.
+   * In that case, the value set is expanded from the CodeSystems it references, so that
+   * code generation can still produce strongly typed code unions.
+   */
+  public get concepts(): Array<{ code: string; display?: string | undefined }> {
+    const expansionConcepts = (this as any).expansion?.contains;
+    if (expansionConcepts?.length) {
+      return expansionConcepts;
+    }
+
+    return this._definitions.shipsValueSetExpansions ? [] : this.composeConcepts;
+  }
+
+  private get composeConcepts(): Array<{
+    code: string;
+    display?: string | undefined;
+  }> {
+    const includeConcepts = ((this as any).compose?.include || []).flatMap(
+      (include: any) => {
+        if (include.concept?.length) {
+          return include.concept;
+        }
+
+        return (
+          this._definitions.codeSystemsByUrl.get(include.system)?.concept || []
+        );
+      },
+    );
+
+    return includeConcepts.flatMap(flattenCodeSystemConcept);
   }
 
   /**
@@ -876,3 +988,24 @@ export const PRIMITIVE_TYPES = [
   "uuid",
   "xhtml",
 ];
+
+export interface CodeSystemConcept {
+  code: string;
+  display?: string | undefined;
+  concept?: CodeSystemConcept[] | undefined;
+}
+
+export interface CodeSystemDefinition {
+  url: string;
+  concept?: CodeSystemConcept[] | undefined;
+}
+
+/** Flatten a (possibly hierarchical) CodeSystem concept list. */
+function flattenCodeSystemConcept(
+  concept: CodeSystemConcept,
+): Array<{ code: string; display?: string | undefined }> {
+  return [
+    { code: concept.code, display: concept.display },
+    ...(concept.concept || []).flatMap(flattenCodeSystemConcept),
+  ];
+}

@@ -22,8 +22,8 @@
   "scripts": {
     "build": "pnpm clean && pnpm copyfiles && rollup --config rollup.config.mjs",
     "check": "prettier --check ./src && eslint ./src && tsc --noEmit",
-    "clean": "rimraf dist && rimraf src/r4b/[!__]**",
-    "copyfiles": "pnpm --dir=\"${PWD}/../codegen\" dev copy -s \"${PWD}/src/r5\" -t \"${PWD}/src/r4b\" -i '**/*.ts(x)?' -e '**/*.codegen.ts' --source-fhir r5 --target-fhir r4b",
+    "clean": "rimraf dist && rimraf src/r4b/[!__]** && rimraf src/r6/[!__]**",
+    "copyfiles": "pnpm --dir=\"${PWD}/../codegen\" dev copy -s \"${PWD}/src/r5\" -t \"${PWD}/src/r4b\" -i '**/*.ts(x)?' -e '**/*.codegen.ts' --source-fhir r5 --target-fhir r4b && pnpm --dir=\"${PWD}/../codegen\" dev copy -s \"${PWD}/src/r5\" -t \"${PWD}/src/r6\" -i '**/*.ts(x)?' -e '**/*.codegen.ts' --source-fhir r5 --target-fhir r6",
     "dev": "nodemon --watch src/r5 --ext ts,tsx --exec \"pnpm copyfiles && rollup --config rollup.config.mjs\"",
     "format": "eslint --fix ./src && prettier --log-level warn --write ./src"
   },
@@ -47,6 +47,16 @@
       "require": {
         "types": "./dist/r5/cjs/index.d.ts",
         "default": "./dist/r5/cjs/index.cjs"
+      }
+    },
+    "./r6": {
+      "import": {
+        "types": "./dist/r6/esm/index.d.ts",
+        "default": "./dist/r6/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/r6/cjs/index.d.ts",
+        "default": "./dist/r6/cjs/index.cjs"
       }
     }
   },

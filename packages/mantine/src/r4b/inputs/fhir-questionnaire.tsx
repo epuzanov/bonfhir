@@ -3,7 +3,6 @@
 import {
   QuestionnaireItem,
   QuestionnaireItemAnswerOption,
-  QuestionnaireItemType,
   QuestionnaireResponse,
   QuestionnaireResponseItem,
   ValueSetExpansionContains,
@@ -334,7 +333,7 @@ function buildQuestionnaireResponseItems(
   const result: QuestionnaireResponseItem[] = [];
 
   for (const i of item) {
-    switch (i.type as QuestionnaireItemType | "choice") {
+    switch (i.type as string) {
       case "group": {
         const groupValues = values[i.linkId];
         if (groupValues) {

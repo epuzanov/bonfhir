@@ -5,9 +5,9 @@
 <% for (const valueSet of fhir.requiredBindingValueSets) { %>
   <%= valueSet.jsDoc %>
   export type <%= valueSet.safeName %> =
-  <% if (valueSet.expansion?.contains?.length) { %>
-    <% for (const expansion of valueSet.expansion?.contains || []) { %>
-      | "<%= expansion.code %>"
+  <% if (valueSet.concepts.length > 0) { %>
+    <% for (const concept of valueSet.concepts) { %>
+      | "<%= concept.code %>"
     <% } %>;
   <% } else { %>
     string;

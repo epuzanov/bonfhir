@@ -10,7 +10,7 @@ import filesize from "rollup-plugin-filesize";
 
 const packageJson = JSON.parse(await readFile("package.json", "utf8"));
 
-export default ["r4b", "r5"].flatMap((release) =>
+export default ["r4b", "r5", "r6"].flatMap((release) =>
   ["client", "server"].flatMap((end) =>
     ["cjs", "esm"].flatMap((format) => [
       {

@@ -47,11 +47,32 @@ export function toTsType(fhirType: string): string {
   /* eslint-enable unicorn/switch-case-braces */
 }
 
+/**
+ * Resolve the TypeScript type name to use for a StructureDefinition URL.
+ *
+ * Profiles (e.g. constraints such as `provenance-relevant-history`) do not have their own
+ * generated TypeScript type, so the base type they constrain has to be used instead.
+ */
+export type StructureDefinitionTypeResolver = (
+  url: string,
+) => string | undefined;
+
 export function targetProfileToTsTypes(
   targetDefinitions: string[] | undefined,
+  resolveType?: StructureDefinitionTypeResolver | null | undefined,
 ): string | undefined {
   return targetDefinitions
-    ?.map((x) => x?.replace("http://hl7.org/fhir/StructureDefinition/", ""))
+    ?.map((x) => {
+      const profileName = x?.replace(
+        "http://hl7.org/fhir/StructureDefinition/",
+        "",
+      );
+      if (!profileName) {
+        return undefined;
+      }
+
+      return resolveType?.(x) ?? profileName;
+    })
     .filter(Boolean)
     .join(" | ");
 }

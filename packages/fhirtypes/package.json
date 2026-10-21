@@ -20,9 +20,9 @@
   "scripts": {
     "build": "pnpm clean && pnpm codegen && pnpm copyfiles && rollup --config rollup.config.mjs && rollup --config rollup-global.config.mjs",
     "check": "prettier --check ./src && eslint ./src && tsc --noEmit",
-    "clean": "rimraf dist && rimraf src/r4b/[!__]**",
-    "copyfiles": "pnpm --dir=\"${PWD}/../codegen\" dev copy -s \"${PWD}/src/r5\" -t \"${PWD}/src/r4b\" -i '**/*.ts' -e '**/*.codegen.ts' --source-fhir r5 --target-fhir r4b",
-    "codegen": "pnpm --dir=\"${PWD}/../codegen\" dev generate --fhir r4b,r5 -t \"${PWD}/templates/**/*.ejs\" -b \"${PWD}/templates\" -p 'prettier --write %files%' -o \"${PWD}/src/<%= fhir.release %>\"",
+    "clean": "rimraf dist && rimraf src/r4b/[!__]** && rimraf src/r6/[!__]**",
+    "copyfiles": "pnpm --dir=\"${PWD}/../codegen\" dev copy -s \"${PWD}/src/r5\" -t \"${PWD}/src/r4b\" -i '**/*.ts' -e '**/*.codegen.ts' --source-fhir r5 --target-fhir r4b && pnpm --dir=\"${PWD}/../codegen\" dev copy -s \"${PWD}/src/r5\" -t \"${PWD}/src/r6\" -i '**/*.ts' -e '**/*.codegen.ts' --source-fhir r5 --target-fhir r6",
+    "codegen": "pnpm --dir=\"${PWD}/../codegen\" dev generate --fhir r4b,r5,r6 -t \"${PWD}/templates/**/*.ejs\" -b \"${PWD}/templates\" -p 'prettier --write %files%' -o \"${PWD}/src/<%= fhir.release %>\"",
     "dev": "nodemon --watch templates --watch src/r5 --ext ejs,ts --ignore '**/*.codegen.ts' --exec \"pnpm codegen && pnpm copyfiles\"",
     "format": "eslint --fix ./src && prettier --log-level warn --write ./src"
   },
@@ -49,6 +49,17 @@
         "default": "./dist/r5/cjs/index.cjs"
       },
       "script": "./dist/r5/global/index.js"
+    },
+    "./r6": {
+      "import": {
+        "types": "./dist/r6/esm/index.d.ts",
+        "default": "./dist/r6/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/r6/cjs/index.d.ts",
+        "default": "./dist/r6/cjs/index.cjs"
+      },
+      "script": "./dist/r6/global/index.js"
     }
   },
   "files": [

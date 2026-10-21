@@ -436,6 +436,36 @@ export class FhirSearchBuilder {
   }
 
   /**
+   * Add a search parameter of type resource: https://hl7.org/fhir/search.html#resource
+   *
+   * A resource search parameter chains through embedded resources (e.g. the `message`
+   * search parameter on `Bundle`).
+   *
+   * @param parameter the search parameter name
+   * @param value - the value of the parameter. It will be constructed as-is in the final search query
+   * @returns the modified builder instance
+   *
+   * @example
+   *    > fhirSearch().resourceParam("message", "MessageHeader/123").href
+   *    > "message=MessageHeader%2F123"
+   */
+  public resourceParam(
+    parameter: string,
+    value: string | string[] | null | undefined,
+  ): this {
+    if (!value) {
+      return this;
+    }
+
+    return this.push(
+      parameter,
+      (Array.isArray(value) ? value : [value])
+        .map((x) => encodeURIComponent(x))
+        .join(","),
+    );
+  }
+
+  /**
    * That indicates that the way this parameter works is unique to the parameter and described with the parameter.
    *
    * @param parameter the search parameter name

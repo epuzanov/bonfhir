@@ -1,0 +1,444 @@
+import {
+  BooleanLabels,
+  DurationFormatterOptions,
+  IdentifierFormatterOptions,
+  ValueFormatterTypes,
+  addressFormatter,
+  ageFormatter,
+  annotationFormatter,
+  attachmentFormatter,
+  availabilityFormatter,
+  booleanFormatter,
+  canonicalFormatter,
+  choiceFormatter,
+  codeFormatter,
+  codeableConceptFormatter,
+  codeableReferenceFormatter,
+  codingFormatter,
+  contactDetailFormatter,
+  contactPointFormatter,
+  countFormatter,
+  dataRequirementFormatter,
+  dateFormatter,
+  dateTimeFormatter,
+  decimalFormatter,
+  distanceFormatter,
+  dosageFormatter,
+  durationFormatter,
+  expressionFormatter,
+  extendedContactDetailFormatter,
+  fhirPathFormatter,
+  humanNameFormatter,
+  idFormatter,
+  identifierFormatter,
+  instantFormatter,
+  integer64Formatter,
+  integerFormatter,
+  markdownFormatter,
+  marketingStatusFormatter,
+  metaFormatter,
+  monetaryComponentFormatter,
+  moneyFormatter,
+  oidFormatter,
+  parameterDefinitionFormatter,
+  periodFormatter,
+  positiveIntFormatter,
+  productShelfLifeFormatter,
+  quantityFormatter,
+  rangeFormatter,
+  ratioFormatter,
+  ratioRangeFormatter,
+  referenceFormatter,
+  relatedArtifactFormatter,
+  relativeTimeFormatter,
+  sampledDataFormatter,
+  signatureFormatter,
+  stringFormatter,
+  timeFormatter,
+  timingFormatter,
+  triggerDefinitionFormatter,
+  unsignedIntFormatter,
+  uriFormatter,
+  urlFormatter,
+  usageContextFormatter,
+  uuidFormatter,
+  virtualServiceDetailFormatter,
+} from "./value-formatters";
+
+/**
+ * A value formatter is a function that takes a value and returns a string.
+ * Its intent is to be composed with other formatters.
+ */
+export interface ValueFormatter<TType extends string, TValue, TOptions> {
+  type: TType;
+  format: (
+    value: TValue,
+    options: TOptions | null | undefined,
+    formatterOptions: { formatter: Formatter } & (
+      | FormatterOptions
+      | null
+      | undefined
+    ),
+  ) => string;
+}
+
+export interface CommonFormatterOptions {
+  /**
+   * The value to return when the result of the formatting is falsy.
+   */
+  default?: string | null | undefined;
+
+  /**
+   * If the result of the formatter is truthy, this will decorate the result.
+   * Use {} as the placeholder for the result of the formatter.
+   *
+   * @example
+   * formatter.format("string", "foo", { decorator: "bar {} baz" }) // "bar foo baz"
+   */
+  decorator?: string | null | undefined;
+}
+
+/**
+ * Remove the common options from a formatter options object so that they are not applied multiple times.
+ * Has to be used when passing whole upstream options to downstream formatters.
+ */
+export function cleanUpCommonOptions<T>(
+  options: T | null | undefined,
+): Omit<T, "default" | "decorator"> | undefined {
+  if (!options || typeof options !== "object") {
+    return undefined;
+  }
+
+  const {
+    default: defaultOmitted,
+    decorator: decoratorOmitted,
+    ...otherOptions
+  } = options as T & CommonFormatterOptions;
+  return otherOptions;
+}
+
+/**
+ * Extends the base Formatter type with an overload of the format function that fits the ValueFormatter.
+ */
+export type WithTypedFormatFunction<
+  TValueFormatter,
+  TThis extends Formatter = Formatter,
+> =
+  TValueFormatter extends ValueFormatter<
+    infer TType,
+    infer TValue,
+    infer TOptions
+  >
+    ? {
+        format(
+          type: TType,
+          value: TValue,
+          options?: (TOptions & CommonFormatterOptions) | null | undefined,
+        ): string;
+      } & TThis
+    : never;
+
+/** Cast the formatter as if it has the format overload of TValueParameter format. */
+export function withValueFormatter<TValueFormatter>(
+  formatter: Formatter,
+): WithTypedFormatFunction<TValueFormatter> {
+  return formatter as WithTypedFormatFunction<TValueFormatter>;
+}
+
+export interface FormatterOptions {
+  /**
+   * The locale to use when formatting values.
+   * If not provided, will use the ambient value.
+   */
+  locale?: string | undefined;
+
+  /**
+   * The default labels to use for boolean values.
+   */
+  booleanLabels?: BooleanLabels | null | undefined;
+
+  /**
+   * The default labels to use for system values.
+   */
+  systemsLabels?:
+    | IdentifierFormatterOptions["systemsLabels"]
+    | null
+    | undefined;
+
+  /**
+   * The default quantity separator to use.
+   */
+  quantitySeparator?: string | null | undefined;
+
+  /**
+   * The default range separator to use.
+   */
+  rangeSeparator?: string | null | undefined;
+
+  /**
+   * The default denominator separator to use.
+   */
+  denominatorSeparator?: string | null | undefined;
+
+  /**
+   * The default duration expansions to use.
+   */
+  durationExpansions?:
+    | DurationFormatterOptions["expansions"]
+    | null
+    | undefined;
+}
+
+export class Formatter {
+  /** Build a new formatter with the default value formatters registered. */
+  public static build(options?: FormatterOptions | null | undefined) {
+    return new Formatter(options)
+      .register(addressFormatter)
+      .register(ageFormatter)
+      .register(annotationFormatter)
+      .register(attachmentFormatter)
+      .register(availabilityFormatter)
+      .register(booleanFormatter)
+      .register(canonicalFormatter)
+      .register(choiceFormatter)
+      .register(codeFormatter)
+      .register(codeableConceptFormatter)
+      .register(codeableReferenceFormatter)
+      .register(codingFormatter)
+      .register(contactDetailFormatter)
+      .register(contactPointFormatter)
+      .register(countFormatter)
+      .register(dataRequirementFormatter)
+      .register(dateFormatter)
+      .register(dateTimeFormatter)
+      .register(decimalFormatter)
+      .register(distanceFormatter)
+      .register(dosageFormatter)
+      .register(durationFormatter)
+      .register(expressionFormatter)
+      .register(extendedContactDetailFormatter)
+      .register(fhirPathFormatter)
+      .register(humanNameFormatter)
+      .register(idFormatter)
+      .register(identifierFormatter)
+      .register(instantFormatter)
+      .register(integerFormatter)
+      .register(integer64Formatter)
+      .register(markdownFormatter)
+      .register(marketingStatusFormatter)
+      .register(metaFormatter)
+      .register(monetaryComponentFormatter)
+      .register(moneyFormatter)
+      .register(oidFormatter)
+      .register(parameterDefinitionFormatter)
+      .register(periodFormatter)
+      .register(positiveIntFormatter)
+      .register(productShelfLifeFormatter)
+      .register(quantityFormatter)
+      .register(rangeFormatter)
+      .register(ratioFormatter)
+      .register(ratioRangeFormatter)
+      .register(referenceFormatter)
+      .register(relatedArtifactFormatter)
+      .register(relativeTimeFormatter)
+      .register(sampledDataFormatter)
+      .register(signatureFormatter)
+      .register(stringFormatter)
+      .register(timeFormatter)
+      .register(timingFormatter)
+      .register(triggerDefinitionFormatter)
+      .register(unsignedIntFormatter)
+      .register(uriFormatter)
+      .register(urlFormatter)
+      .register(usageContextFormatter)
+      .register(uuidFormatter)
+      .register(virtualServiceDetailFormatter);
+  }
+
+  private static _default: Formatter | undefined;
+
+  /**
+   * Default instance of the formatter.
+   * Use the ambient locale and default options.
+   */
+  public static get default(): DefaultFormatter {
+    return this._default ?? (this._default = this.build());
+  }
+
+  /**
+   * Modify the default instance of the formatter.
+   */
+  public static set default(value: Formatter | undefined) {
+    this._default = value;
+  }
+
+  private readonly _formatters = new Map<
+    string,
+    ValueFormatter<string, unknown, unknown>
+  >();
+
+  constructor(public readonly options?: FormatterOptions | null | undefined) {}
+
+  /**
+   * Format a value using the specified type and options.
+   */
+  public format(
+    type: ValueFormatterTypes | string,
+    value: unknown,
+    options?: CommonFormatterOptions | null | undefined,
+  ): string {
+    const valueFormatter = this._formatters.get(type);
+    if (!valueFormatter) {
+      if (value !== null || value !== undefined) {
+        // todo: warn?
+        return String(value);
+      }
+
+      throw new Error(`No formatter and no value found for type '${type}'`);
+    }
+
+    const formatterResult = valueFormatter.format(value, options, {
+      formatter: this,
+      ...this.options,
+    });
+
+    if (options?.default && !formatterResult) {
+      return options.default;
+    }
+
+    if (options?.decorator && formatterResult?.trim()) {
+      return options.decorator.replace("{}", formatterResult);
+    }
+
+    return formatterResult;
+  }
+
+  /**
+   * Tag template option that can be used to format values.
+   */
+  public message(
+    strings: TemplateStringsArray,
+    ...expr: Array<DefaultFormatterParameters | string | number>
+  ): string {
+    const renderedExpressions = expr.map((value) => {
+      if (value == undefined) {
+        return "";
+      }
+
+      if (Array.isArray(value)) {
+        const formatterName = value[0];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const valueToFormat: any = value[1];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const options: any = value[2];
+
+        return this.format(formatterName, valueToFormat, options);
+      }
+
+      return value.toString();
+    });
+    return strings
+      .flatMap((str, idx) => [str, renderedExpressions[idx]])
+      .join("");
+  }
+
+  /**
+   * Return true if this formatter can format the specified type.
+   */
+  public canFormat(type: string) {
+    return this._formatters.has(type);
+  }
+
+  /**
+   * Register an additional {@link ValueFormatter} with this formatter,
+   * and return this instance with the added format signature.
+   */
+  public register<TValueFormatter>(
+    valueFormatter: TValueFormatter,
+  ): WithTypedFormatFunction<TValueFormatter, this> {
+    this._formatters.set(
+      (valueFormatter as ValueFormatter<string, unknown, unknown>).type,
+      valueFormatter as ValueFormatter<string, unknown, unknown>,
+    );
+    return this as WithTypedFormatFunction<TValueFormatter, this>;
+  }
+}
+
+/**
+ * The default formatter type - with all the default value formatters registered.
+ */
+export type DefaultFormatter = ReturnType<(typeof Formatter)["build"]>;
+
+export type ValueFormatterParameters<TValueFormatter> =
+  TValueFormatter extends ValueFormatter<
+    infer TType,
+    infer TValue,
+    infer TOptions
+  >
+    ? [TType, TValue] | [TType, TValue, TOptions & CommonFormatterOptions]
+    : never;
+
+/**
+ * Default formatters parameters as an array of tuples.
+ */
+export type DefaultFormatterParameters =
+  | ValueFormatterParameters<typeof addressFormatter>
+  | ValueFormatterParameters<typeof ageFormatter>
+  | ValueFormatterParameters<typeof annotationFormatter>
+  | ValueFormatterParameters<typeof attachmentFormatter>
+  | ValueFormatterParameters<typeof availabilityFormatter>
+  | ValueFormatterParameters<typeof booleanFormatter>
+  | ValueFormatterParameters<typeof canonicalFormatter>
+  | ValueFormatterParameters<typeof choiceFormatter>
+  | ValueFormatterParameters<typeof codeFormatter>
+  | ValueFormatterParameters<typeof codeableConceptFormatter>
+  | ValueFormatterParameters<typeof codeableReferenceFormatter>
+  | ValueFormatterParameters<typeof codingFormatter>
+  | ValueFormatterParameters<typeof contactDetailFormatter>
+  | ValueFormatterParameters<typeof contactPointFormatter>
+  | ValueFormatterParameters<typeof countFormatter>
+  | ValueFormatterParameters<typeof dataRequirementFormatter>
+  | ValueFormatterParameters<typeof dateFormatter>
+  | ValueFormatterParameters<typeof dateTimeFormatter>
+  | ValueFormatterParameters<typeof decimalFormatter>
+  | ValueFormatterParameters<typeof distanceFormatter>
+  | ValueFormatterParameters<typeof dosageFormatter>
+  | ValueFormatterParameters<typeof durationFormatter>
+  | ValueFormatterParameters<typeof expressionFormatter>
+  | ValueFormatterParameters<typeof extendedContactDetailFormatter>
+  | ValueFormatterParameters<typeof fhirPathFormatter>
+  | ValueFormatterParameters<typeof humanNameFormatter>
+  | ValueFormatterParameters<typeof idFormatter>
+  | ValueFormatterParameters<typeof identifierFormatter>
+  | ValueFormatterParameters<typeof instantFormatter>
+  | ValueFormatterParameters<typeof integerFormatter>
+  | ValueFormatterParameters<typeof integer64Formatter>
+  | ValueFormatterParameters<typeof markdownFormatter>
+  | ValueFormatterParameters<typeof marketingStatusFormatter>
+  | ValueFormatterParameters<typeof metaFormatter>
+  | ValueFormatterParameters<typeof monetaryComponentFormatter>
+  | ValueFormatterParameters<typeof moneyFormatter>
+  | ValueFormatterParameters<typeof oidFormatter>
+  | ValueFormatterParameters<typeof parameterDefinitionFormatter>
+  | ValueFormatterParameters<typeof periodFormatter>
+  | ValueFormatterParameters<typeof positiveIntFormatter>
+  | ValueFormatterParameters<typeof productShelfLifeFormatter>
+  | ValueFormatterParameters<typeof quantityFormatter>
+  | ValueFormatterParameters<typeof rangeFormatter>
+  | ValueFormatterParameters<typeof ratioFormatter>
+  | ValueFormatterParameters<typeof ratioRangeFormatter>
+  | ValueFormatterParameters<typeof referenceFormatter>
+  | ValueFormatterParameters<typeof relatedArtifactFormatter>
+  | ValueFormatterParameters<typeof relativeTimeFormatter>
+  | ValueFormatterParameters<typeof sampledDataFormatter>
+  | ValueFormatterParameters<typeof signatureFormatter>
+  | ValueFormatterParameters<typeof stringFormatter>
+  | ValueFormatterParameters<typeof timeFormatter>
+  | ValueFormatterParameters<typeof timingFormatter>
+  | ValueFormatterParameters<typeof triggerDefinitionFormatter>
+  | ValueFormatterParameters<typeof unsignedIntFormatter>
+  | ValueFormatterParameters<typeof uriFormatter>
+  | ValueFormatterParameters<typeof urlFormatter>
+  | ValueFormatterParameters<typeof usageContextFormatter>
+  | ValueFormatterParameters<typeof uuidFormatter>
+  | ValueFormatterParameters<typeof virtualServiceDetailFormatter>;

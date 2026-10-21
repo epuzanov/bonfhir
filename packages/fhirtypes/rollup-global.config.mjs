@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import filesize from "rollup-plugin-filesize";
 
 // This is a separate file as if included in the main rollup, nodejs explodes when compiling.
-export default ["r4b", "r5"].map((release) => ({
+export default ["r4b", "r5", "r6"].map((release) => ({
   input: `src/${release}/global.ts`,
   output: [
     {
