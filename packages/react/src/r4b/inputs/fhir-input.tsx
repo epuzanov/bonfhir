@@ -2,8 +2,12 @@ import { AnyResourceType } from "@bonfhir/core/r4b";
 import { ReactElement } from "react";
 import { useFhirUIContext } from "../context";
 import {
+  FhirInputAddress,
+  FhirInputAddressProps,
   FhirInputBoolean,
   FhirInputBooleanProps,
+  FhirInputCodeableReference,
+  FhirInputCodeableReferenceProps,
   FhirInputContactPoint,
   FhirInputContactPointProps,
   FhirInputDate,
@@ -17,11 +21,19 @@ import {
   FhirInputIdentifier,
   FhirInputIdentifierProps,
   FhirInputMarkdown,
+  FhirInputMarkdownIupac,
+  FhirInputMarkdownIupacProps,
   FhirInputMarkdownProps,
   FhirInputNumber,
   FhirInputNumberProps,
+  FhirInputPeriod,
+  FhirInputPeriodProps,
   FhirInputQuantity,
   FhirInputQuantityProps,
+  FhirInputRange,
+  FhirInputRangeProps,
+  FhirInputRatio,
+  FhirInputRatioProps,
   FhirInputResource,
   FhirInputResourceProps,
   FhirInputString,
@@ -40,8 +52,14 @@ export function FhirInput<
   props = applyDefaultProps("FhirInput", props);
 
   switch (props.type) {
+    case "Address": {
+      return <FhirInputAddress<TRendererProps> {...props} />;
+    }
     case "boolean": {
       return <FhirInputBoolean<TRendererProps> {...props} />;
+    }
+    case "CodeableReference": {
+      return <FhirInputCodeableReference<TRendererProps> {...props} />;
     }
     case "ContactPoint": {
       return <FhirInputContactPoint<TRendererProps> {...props} />;
@@ -65,6 +83,9 @@ export function FhirInput<
     case "markdown": {
       return <FhirInputMarkdown<TRendererProps> {...props} />;
     }
+    case "markdownIupac": {
+      return <FhirInputMarkdownIupac<TRendererProps> {...props} />;
+    }
     case "decimal":
     case "integer":
     case "integer64":
@@ -72,8 +93,17 @@ export function FhirInput<
     case "unsignedInt": {
       return <FhirInputNumber<TRendererProps> {...props} />;
     }
+    case "Period": {
+      return <FhirInputPeriod<TRendererProps> {...props} />;
+    }
     case "Quantity": {
       return <FhirInputQuantity<TRendererProps> {...props} />;
+    }
+    case "Range": {
+      return <FhirInputRange<TRendererProps> {...props} />;
+    }
+    case "Ratio": {
+      return <FhirInputRatio<TRendererProps> {...props} />;
     }
     case "Resource":
     case "Reference": {
@@ -106,7 +136,9 @@ export type FhirInputProps<
   TRendererProps = any,
   TResourceType extends AnyResourceType = AnyResourceType,
 > =
+  | FhirInputAddressProps<TRendererProps>
   | FhirInputBooleanProps<TRendererProps>
+  | FhirInputCodeableReferenceProps<TRendererProps>
   | FhirInputContactPointProps<TRendererProps>
   | FhirInputDateProps<TRendererProps>
   | FhirInputDateTimeProps<TRendererProps>
@@ -114,8 +146,12 @@ export type FhirInputProps<
   | FhirInputHumanNameProps<TRendererProps>
   | FhirInputIdentifierProps<TRendererProps>
   | FhirInputMarkdownProps<TRendererProps>
+  | FhirInputMarkdownIupacProps<TRendererProps>
   | FhirInputNumberProps<TRendererProps>
+  | FhirInputPeriodProps<TRendererProps>
   | FhirInputQuantityProps<TRendererProps>
+  | FhirInputRangeProps<TRendererProps>
+  | FhirInputRatioProps<TRendererProps>
   | FhirInputResourceProps<TRendererProps, TResourceType>
   | FhirInputStringProps<TRendererProps>
   | FhirInputTerminologyProps<TRendererProps>

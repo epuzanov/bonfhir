@@ -34,6 +34,11 @@ export type ValueFormatterParametersAsProps<TValueFormatter> =
 export type DefaultFormatterParametersProps =
   | ValueFormatterParametersAsProps<typeof valueFormatters.addressFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.ageFormatter>
+  | ValueFormatterParametersAsProps<typeof valueFormatters.annotationFormatter>
+  | ValueFormatterParametersAsProps<typeof valueFormatters.attachmentFormatter>
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.availabilityFormatter
+    >
   | ValueFormatterParametersAsProps<typeof valueFormatters.booleanFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.canonicalFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.choiceFormatter>
@@ -43,14 +48,30 @@ export type DefaultFormatterParametersProps =
     >
   | ValueFormatterParametersAsProps<typeof valueFormatters.codingFormatter>
   | ValueFormatterParametersAsProps<
+      typeof valueFormatters.codeableReferenceFormatter
+    >
+  | ValueFormatterParametersAsProps<typeof valueFormatters.codingFormatter>
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.contactDetailFormatter
+    >
+  | ValueFormatterParametersAsProps<
       typeof valueFormatters.contactPointFormatter
     >
   | ValueFormatterParametersAsProps<typeof valueFormatters.countFormatter>
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.dataRequirementFormatter
+    >
   | ValueFormatterParametersAsProps<typeof valueFormatters.dateFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.dateTimeFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.decimalFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.distanceFormatter>
+  | ValueFormatterParametersAsProps<typeof valueFormatters.dosageFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.durationFormatter>
+  | ValueFormatterParametersAsProps<typeof valueFormatters.fhirPathFormatter>
+  | ValueFormatterParametersAsProps<typeof valueFormatters.expressionFormatter>
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.extendedContactDetailFormatter
+    >
   | ValueFormatterParametersAsProps<typeof valueFormatters.fhirPathFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.humanNameFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.idFormatter>
@@ -58,21 +79,52 @@ export type DefaultFormatterParametersProps =
   | ValueFormatterParametersAsProps<typeof valueFormatters.instantFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.integerFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.markdownFormatter>
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.marketingStatusFormatter
+    >
+  | ValueFormatterParametersAsProps<typeof valueFormatters.metaFormatter>
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.monetaryComponentFormatter
+    >
   | ValueFormatterParametersAsProps<typeof valueFormatters.moneyFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.oidFormatter>
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.parameterDefinitionFormatter
+    >
   | ValueFormatterParametersAsProps<typeof valueFormatters.periodFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.positiveIntFormatter>
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.productShelfLifeFormatter
+    >
   | ValueFormatterParametersAsProps<typeof valueFormatters.quantityFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.rangeFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.ratioFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.ratioRangeFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.referenceFormatter>
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.relatedArtifactFormatter
+    >
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.relativeTimeFormatter
+    >
+  | ValueFormatterParametersAsProps<typeof valueFormatters.sampledDataFormatter>
+  | ValueFormatterParametersAsProps<typeof valueFormatters.signatureFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.stringFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.timeFormatter>
+  | ValueFormatterParametersAsProps<typeof valueFormatters.timingFormatter>
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.triggerDefinitionFormatter
+    >
   | ValueFormatterParametersAsProps<typeof valueFormatters.unsignedIntFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.uriFormatter>
   | ValueFormatterParametersAsProps<typeof valueFormatters.urlFormatter>
-  | ValueFormatterParametersAsProps<typeof valueFormatters.uuidFormatter>;
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.usageContextFormatter
+    >
+  | ValueFormatterParametersAsProps<typeof valueFormatters.uuidFormatter>
+  | ValueFormatterParametersAsProps<
+      typeof valueFormatters.virtualServiceDetailFormatter
+    >;
 
 /**
  * @note HTML generated from Markdown content with `style: "html"` will NOT be

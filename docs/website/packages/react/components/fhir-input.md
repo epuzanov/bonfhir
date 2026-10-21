@@ -11,7 +11,8 @@ The big benefit is that it works with FHIR types natively. For example:
 - date, dateTime et all are formatter properly for FHIR
 - there is no empty string - empty strings are always undefined
 - terminology is supported, as well as references and resources search
-- composite data types are also supported: `Identifier`, `HumanName`, `Address`, `ContactPoint`...
+- composite data types are also supported: `Identifier`, `HumanName`, `Address`, `ContactPoint`, `CodeableReference`, `Period`, `Range`, `Ratio`...
+- markdown is supported, including subscript and superscript (`~subscript~` / `^superscript^`), and a specialized `markdownIupac` type is available for chemical formulas
 
 :::tip
 

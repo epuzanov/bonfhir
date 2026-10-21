@@ -3,17 +3,23 @@ import {
   MantineFhirErrorProps,
   MantineFhirFormatterProps,
   MantineFhirInfiniteMarkerProps,
+  MantineFhirInputAddressProps,
   MantineFhirInputArrayProps,
   MantineFhirInputBooleanProps,
+  MantineFhirInputCodeableReferenceProps,
   MantineFhirInputContactPointProps,
   MantineFhirInputDateProps,
   MantineFhirInputDateTimeProps,
   MantineFhirInputDurationProps,
   MantineFhirInputHumanNameProps,
   MantineFhirInputIdentifierProps,
+  MantineFhirInputMarkdownIupacProps,
   MantineFhirInputMarkdownProps,
   MantineFhirInputNumberProps,
+  MantineFhirInputPeriodProps,
   MantineFhirInputQuantityProps,
+  MantineFhirInputRangeProps,
+  MantineFhirInputRatioProps,
   MantineFhirInputResourceProps,
   MantineFhirInputStringProps,
   MantineFhirInputTerminologyProps,
@@ -97,7 +103,9 @@ declare global {
   export type FhirInputProps<
     TResourceType extends AnyResourceType = AnyResourceType,
   > =
+    | FhirInputAddressProps<MantineFhirInputAddressProps>
     | FhirInputBooleanProps<MantineFhirInputBooleanProps>
+    | FhirInputCodeableReferenceProps<MantineFhirInputCodeableReferenceProps>
     | FhirInputContactPointProps<MantineFhirInputContactPointProps>
     | FhirInputDateProps<MantineFhirInputDateProps>
     | FhirInputDateTimeProps<MantineFhirInputDateTimeProps>
@@ -105,8 +113,12 @@ declare global {
     | FhirInputHumanNameProps<MantineFhirInputHumanNameProps>
     | FhirInputIdentifierProps<MantineFhirInputIdentifierProps>
     | FhirInputMarkdownProps<MantineFhirInputMarkdownProps>
+    | FhirInputMarkdownIupacProps<MantineFhirInputMarkdownIupacProps>
     | FhirInputNumberProps<MantineFhirInputNumberProps>
+    | FhirInputPeriodProps<MantineFhirInputPeriodProps>
     | FhirInputQuantityProps<MantineFhirInputQuantityProps>
+    | FhirInputRangeProps<MantineFhirInputRangeProps>
+    | FhirInputRatioProps<MantineFhirInputRatioProps>
     | FhirInputResourceProps<MantineFhirInputResourceProps, TResourceType>
     | FhirInputStringProps<MantineFhirInputStringProps>
     | FhirInputTerminologyProps<MantineFhirInputTerminologyProps>

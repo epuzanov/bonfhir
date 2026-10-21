@@ -5,19 +5,28 @@ import {
   ValueFormatterTypes,
   addressFormatter,
   ageFormatter,
+  annotationFormatter,
+  attachmentFormatter,
+  availabilityFormatter,
   booleanFormatter,
   canonicalFormatter,
   choiceFormatter,
   codeFormatter,
   codeableConceptFormatter,
+  codeableReferenceFormatter,
   codingFormatter,
+  contactDetailFormatter,
   contactPointFormatter,
   countFormatter,
+  dataRequirementFormatter,
   dateFormatter,
   dateTimeFormatter,
   decimalFormatter,
   distanceFormatter,
+  dosageFormatter,
   durationFormatter,
+  expressionFormatter,
+  extendedContactDetailFormatter,
   fhirPathFormatter,
   humanNameFormatter,
   idFormatter,
@@ -25,21 +34,34 @@ import {
   instantFormatter,
   integerFormatter,
   markdownFormatter,
+  marketingStatusFormatter,
+  metaFormatter,
+  monetaryComponentFormatter,
   moneyFormatter,
   oidFormatter,
+  parameterDefinitionFormatter,
   periodFormatter,
   positiveIntFormatter,
+  productShelfLifeFormatter,
   quantityFormatter,
   rangeFormatter,
   ratioFormatter,
   ratioRangeFormatter,
   referenceFormatter,
+  relatedArtifactFormatter,
+  relativeTimeFormatter,
+  sampledDataFormatter,
+  signatureFormatter,
   stringFormatter,
   timeFormatter,
+  timingFormatter,
+  triggerDefinitionFormatter,
   unsignedIntFormatter,
   uriFormatter,
   urlFormatter,
+  usageContextFormatter,
   uuidFormatter,
+  virtualServiceDetailFormatter,
 } from "./value-formatters";
 
 /**
@@ -172,19 +194,28 @@ export class Formatter {
     return new Formatter(options)
       .register(addressFormatter)
       .register(ageFormatter)
+      .register(annotationFormatter)
+      .register(attachmentFormatter)
+      .register(availabilityFormatter)
       .register(booleanFormatter)
       .register(canonicalFormatter)
       .register(choiceFormatter)
       .register(codeFormatter)
       .register(codeableConceptFormatter)
+      .register(codeableReferenceFormatter)
       .register(codingFormatter)
+      .register(contactDetailFormatter)
       .register(contactPointFormatter)
       .register(countFormatter)
+      .register(dataRequirementFormatter)
       .register(dateFormatter)
       .register(dateTimeFormatter)
       .register(decimalFormatter)
       .register(distanceFormatter)
+      .register(dosageFormatter)
       .register(durationFormatter)
+      .register(expressionFormatter)
+      .register(extendedContactDetailFormatter)
       .register(fhirPathFormatter)
       .register(humanNameFormatter)
       .register(idFormatter)
@@ -192,21 +223,34 @@ export class Formatter {
       .register(instantFormatter)
       .register(integerFormatter)
       .register(markdownFormatter)
+      .register(marketingStatusFormatter)
+      .register(metaFormatter)
+      .register(monetaryComponentFormatter)
       .register(moneyFormatter)
       .register(oidFormatter)
+      .register(parameterDefinitionFormatter)
       .register(periodFormatter)
       .register(positiveIntFormatter)
+      .register(productShelfLifeFormatter)
       .register(quantityFormatter)
       .register(rangeFormatter)
       .register(ratioFormatter)
       .register(ratioRangeFormatter)
       .register(referenceFormatter)
+      .register(relatedArtifactFormatter)
+      .register(relativeTimeFormatter)
+      .register(sampledDataFormatter)
+      .register(signatureFormatter)
       .register(stringFormatter)
       .register(timeFormatter)
+      .register(timingFormatter)
+      .register(triggerDefinitionFormatter)
       .register(unsignedIntFormatter)
       .register(uriFormatter)
       .register(urlFormatter)
-      .register(uuidFormatter);
+      .register(usageContextFormatter)
+      .register(uuidFormatter)
+      .register(virtualServiceDetailFormatter);
   }
 
   private static _default: Formatter | undefined;
@@ -338,19 +382,28 @@ export type ValueFormatterParameters<TValueFormatter> =
 export type DefaultFormatterParameters =
   | ValueFormatterParameters<typeof addressFormatter>
   | ValueFormatterParameters<typeof ageFormatter>
+  | ValueFormatterParameters<typeof annotationFormatter>
+  | ValueFormatterParameters<typeof attachmentFormatter>
+  | ValueFormatterParameters<typeof availabilityFormatter>
   | ValueFormatterParameters<typeof booleanFormatter>
   | ValueFormatterParameters<typeof canonicalFormatter>
   | ValueFormatterParameters<typeof choiceFormatter>
   | ValueFormatterParameters<typeof codeFormatter>
   | ValueFormatterParameters<typeof codeableConceptFormatter>
+  | ValueFormatterParameters<typeof codeableReferenceFormatter>
   | ValueFormatterParameters<typeof codingFormatter>
+  | ValueFormatterParameters<typeof contactDetailFormatter>
   | ValueFormatterParameters<typeof contactPointFormatter>
   | ValueFormatterParameters<typeof countFormatter>
+  | ValueFormatterParameters<typeof dataRequirementFormatter>
   | ValueFormatterParameters<typeof dateFormatter>
   | ValueFormatterParameters<typeof dateTimeFormatter>
   | ValueFormatterParameters<typeof decimalFormatter>
   | ValueFormatterParameters<typeof distanceFormatter>
+  | ValueFormatterParameters<typeof dosageFormatter>
   | ValueFormatterParameters<typeof durationFormatter>
+  | ValueFormatterParameters<typeof expressionFormatter>
+  | ValueFormatterParameters<typeof extendedContactDetailFormatter>
   | ValueFormatterParameters<typeof fhirPathFormatter>
   | ValueFormatterParameters<typeof humanNameFormatter>
   | ValueFormatterParameters<typeof idFormatter>
@@ -358,18 +411,31 @@ export type DefaultFormatterParameters =
   | ValueFormatterParameters<typeof instantFormatter>
   | ValueFormatterParameters<typeof integerFormatter>
   | ValueFormatterParameters<typeof markdownFormatter>
+  | ValueFormatterParameters<typeof marketingStatusFormatter>
+  | ValueFormatterParameters<typeof metaFormatter>
+  | ValueFormatterParameters<typeof monetaryComponentFormatter>
   | ValueFormatterParameters<typeof moneyFormatter>
   | ValueFormatterParameters<typeof oidFormatter>
+  | ValueFormatterParameters<typeof parameterDefinitionFormatter>
   | ValueFormatterParameters<typeof periodFormatter>
   | ValueFormatterParameters<typeof positiveIntFormatter>
+  | ValueFormatterParameters<typeof productShelfLifeFormatter>
   | ValueFormatterParameters<typeof quantityFormatter>
   | ValueFormatterParameters<typeof rangeFormatter>
   | ValueFormatterParameters<typeof ratioFormatter>
   | ValueFormatterParameters<typeof ratioRangeFormatter>
   | ValueFormatterParameters<typeof referenceFormatter>
+  | ValueFormatterParameters<typeof relatedArtifactFormatter>
+  | ValueFormatterParameters<typeof relativeTimeFormatter>
+  | ValueFormatterParameters<typeof sampledDataFormatter>
+  | ValueFormatterParameters<typeof signatureFormatter>
   | ValueFormatterParameters<typeof stringFormatter>
   | ValueFormatterParameters<typeof timeFormatter>
+  | ValueFormatterParameters<typeof timingFormatter>
+  | ValueFormatterParameters<typeof triggerDefinitionFormatter>
   | ValueFormatterParameters<typeof unsignedIntFormatter>
   | ValueFormatterParameters<typeof uriFormatter>
   | ValueFormatterParameters<typeof urlFormatter>
-  | ValueFormatterParameters<typeof uuidFormatter>;
+  | ValueFormatterParameters<typeof usageContextFormatter>
+  | ValueFormatterParameters<typeof uuidFormatter>
+  | ValueFormatterParameters<typeof virtualServiceDetailFormatter>;

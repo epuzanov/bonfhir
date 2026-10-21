@@ -23,7 +23,9 @@ const meta = {
       description:
         "The FHIR type to render. Will influence the value type and/or the options available.",
       options: [
+        "Address",
         "boolean",
+        "CodeableReference",
         "ContactPoint",
         "dateTime",
         "instant",
@@ -31,10 +33,14 @@ const meta = {
         "HumanName",
         "Identifier",
         "markdown",
+        "markdownIupac",
         "decimal",
         "integer",
         "integer64",
         "positiveInt",
+        "Period",
+        "Range",
+        "Ratio",
         "unsignedInt",
         "Resource",
         "Reference",
@@ -414,6 +420,69 @@ export const Markdown = {
     placeholder: {
       control: "text",
     },
+  },
+};
+
+/**
+ * Render a FHIR [markdown]((https://hl7.org/fhir/datatypes.html#markdown) input, specialized
+ * for IUPAC chemical notation.
+ *
+ * Subscript and superscript are first class citizens, and a palette of characters used by
+ * IUPAC notation (Greek letters, roman numerals, comparison operators, arrows) is available.
+ */
+export const MarkdownIupac = {
+  args: {
+    type: "markdownIupac",
+  },
+  argTypes: {
+    placeholder: {
+      control: "text",
+    },
+  },
+};
+
+/**
+ * Render FHIR [CodeableReference]((https://hl7.org/fhir/datatypes.html#CodeableReference) input.
+ */
+export const CodeableReference = {
+  args: {
+    type: "CodeableReference",
+  },
+};
+
+/**
+ * Render FHIR [Period]((https://hl7.org/fhir/datatypes.html#Period) input.
+ */
+export const Period = {
+  args: {
+    type: "Period",
+  },
+};
+
+/**
+ * Render FHIR [Range]((https://hl7.org/fhir/datatypes.html#Range) input.
+ */
+export const Range = {
+  args: {
+    type: "Range",
+  },
+};
+
+/**
+ * Render FHIR [Ratio]((https://hl7.org/fhir/datatypes.html#Ratio) input.
+ */
+export const Ratio = {
+  args: {
+    type: "Ratio",
+  },
+};
+
+/**
+ * Render FHIR [Address]((https://hl7.org/fhir/datatypes.html#Address) input.
+ */
+export const Address = {
+  args: {
+    type: "Address",
   },
 };
 
