@@ -1,0 +1,115 @@
+{
+  "name": "@bonfhir/mui",
+  "version": "0.0.0",
+  "description": "MUI UI renderers for BonFHIR UI",
+  "keywords": [
+    "HL7",
+    "FHIR",
+    "BonFHIR",
+    "UI",
+    "React",
+    "MUI",
+    "Material UI"
+  ],
+  "homepage": "https://bonfhir.dev/",
+  "bugs": {
+    "url": "https://github.com/bonfhir/bonfhir/issues"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bonfhir/bonfhir.git",
+    "directory": "packages/mui"
+  },
+  "scripts": {
+    "build": "pnpm clean && pnpm copyfiles && rollup --config rollup.config.mjs",
+    "check": "prettier --check ./src && eslint ./src && tsc --noEmit",
+    "clean": "rimraf dist && rimraf src/r4b/[!__]** && rimraf src/r6/[!__]**",
+    "copyfiles": "pnpm --dir=\"${PWD}/../codegen\" dev copy -s \"${PWD}/src/r5\" -t \"${PWD}/src/r4b\" -i '**/*.ts(x)?' -e '**/*.codegen.ts' --source-fhir r5 --target-fhir r4b && pnpm --dir=\"${PWD}/../codegen\" dev copy -s \"${PWD}/src/r5\" -t \"${PWD}/src/r6\" -i '**/*.ts(x)?' -e '**/*.codegen.ts' --source-fhir r5 --target-fhir r6",
+    "dev": "nodemon --watch src/r5 --ext ts,tsx --exec \"pnpm copyfiles && rollup --config rollup.config.mjs\"",
+    "format": "eslint --fix ./src && prettier --log-level warn --write ./src"
+  },
+  "type": "module",
+  "exports": {
+    "./r4b": {
+      "import": {
+        "types": "./dist/r4b/esm/index.d.ts",
+        "default": "./dist/r4b/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/r4b/cjs/index.d.ts",
+        "default": "./dist/r4b/cjs/index.cjs"
+      }
+    },
+    "./r5": {
+      "import": {
+        "types": "./dist/r5/esm/index.d.ts",
+        "default": "./dist/r5/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/r5/cjs/index.d.ts",
+        "default": "./dist/r5/cjs/index.cjs"
+      }
+    },
+    "./r6": {
+      "import": {
+        "types": "./dist/r6/esm/index.d.ts",
+        "default": "./dist/r6/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/r6/cjs/index.d.ts",
+        "default": "./dist/r6/cjs/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@bonfhir/core": "workspace:^2.22.1",
+    "@bonfhir/query": "workspace:^3.2.0",
+    "@bonfhir/react": "workspace:^3.3.0"
+  },
+  "devDependencies": {
+    "@bonfhir/eslint-config": "workspace:*",
+    "@bonfhir/eslint-plugin": "workspace:*",
+    "@bonfhir/prettier-config": "workspace:*",
+    "@bonfhir/typescript-config": "workspace:*",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/material": "5.18.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@tanstack/react-query": "^5.29.0",
+    "@types/react": "^18.2.75",
+    "@types/react-dom": "^18.2.24",
+    "dayjs": "^1.11.10",
+    "nodemon": "^3.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.14.1",
+    "rollup-plugin-dts": "^6.1.0",
+    "rollup-plugin-filesize": "^10.0.0",
+    "typescript": "^5.4.4"
+  },
+  "peerDependencies": {
+    "@emotion/react": "*",
+    "@emotion/styled": "*",
+    "@mui/material": ">=5.18.0 <6",
+    "@tanstack/react-query": "*",
+    "dayjs": "*",
+    "react": "*",
+    "react-dom": "*"
+  },
+  "prettier": "@bonfhir/prettier-config",
+  "eslintConfig": {
+    "extends": "@bonfhir/eslint-config",
+    "rules": {
+      "unicorn/no-null": "off"
+    }
+  }
+}
