@@ -5,8 +5,15 @@ import {
   Grid,
   GridProps,
   Group,
+  GroupProps,
   Input,
   InputWrapperProps,
+  Pagination,
+  PaginationProps,
+  Text,
+  TextInput,
+  TextInputProps,
+  TextProps,
 } from "@mantine/core";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { ReactElement, ReactNode, useEffect } from "react";
@@ -23,6 +30,7 @@ export function MantineFhirInputArray(
         props.onAdd?.(i);
       }
     }
+    // Only run on mount.
   }, []);
 
   return (
@@ -35,7 +43,25 @@ export function MantineFhirInputArray(
       required={Boolean(props.required)}
       {...props.rendererProps?.wrapper}
     >
-      {!props.value?.length && (
+      {props.isFilterable && (
+        <Group wrap="nowrap" mb="xs" {...props.rendererProps?.filterGroup}>
+          <Input.Label htmlFor={props.filterInputId} hidden>
+            Filter
+          </Input.Label>
+          <TextInput
+            id={props.filterInputId}
+            size="xs"
+            w="100%"
+            placeholder={props.filterPlaceholder ?? "Filter..."}
+            value={props.filterText}
+            onChange={(evt) =>
+              props.onFilterTextChange(evt.currentTarget.value)
+            }
+            {...props.rendererProps?.filterInput}
+          />
+        </Group>
+      )}
+      {!props.visibleValue?.length && (
         <ActionIcon
           variant="outline"
           color="primary"
@@ -45,45 +71,89 @@ export function MantineFhirInputArray(
           <IconPlus />
         </ActionIcon>
       )}
-      {props.value?.map((value, index) => (
-        <Grid key={index} align="center" {...props.rendererProps?.grid}>
-          <Grid.Col span="auto">
-            {props.children?.({ arrayValue: props.value, value, index })}
-          </Grid.Col>
-          <Grid.Col span="content">
-            <Group wrap="nowrap" gap="xs">
-              <ActionIcon
-                variant="outline"
-                color="primary"
-                onClick={() => props.onAdd?.(index)}
-                style={{
-                  visibility:
-                    index >= max ||
-                    (props.canAdd && !props.canAdd(value, index))
-                      ? "hidden"
-                      : "visible",
-                }}
-                {...props.rendererProps?.actionIconAdd}
-              >
-                {props.rendererProps?.iconAdd ?? <IconPlus />}
-              </ActionIcon>
-              <ActionIcon
-                variant="subtle"
-                color="red"
-                onClick={() => props.onRemove?.(index)}
-                style={{
-                  visibility: index < min ? "hidden" : "visible",
-                }}
-                {...props.rendererProps?.actionRemove}
-              >
-                {props.rendererProps?.iconRemove ?? <IconMinus />}
-              </ActionIcon>
-            </Group>
-          </Grid.Col>
-        </Grid>
-      ))}
+      {props.visibleValue?.map((visibleValue, position) => {
+        const index = props.visibleIndexes[position] ?? position;
+
+        return (
+          <Grid key={index} align="center" {...props.rendererProps?.grid}>
+            <Grid.Col span="auto">
+              {props.children?.({
+                arrayValue: props.value,
+                value: visibleValue as never,
+                index,
+              })}
+            </Grid.Col>
+            <Grid.Col span="content">
+              <Group wrap="nowrap" gap="xs">
+                <ActionIcon
+                  variant="outline"
+                  color="primary"
+                  onClick={() => props.onAdd?.(index)}
+                  style={{
+                    visibility:
+                      index >= max ||
+                      (props.canAdd &&
+                        !props.canAdd(visibleValue as never, index))
+                        ? "hidden"
+                        : "visible",
+                  }}
+                  {...props.rendererProps?.actionIconAdd}
+                >
+                  {props.rendererProps?.iconAdd ?? <IconPlus />}
+                </ActionIcon>
+                <ActionIcon
+                  variant="subtle"
+                  color="red"
+                  onClick={() => props.onRemove?.(index)}
+                  style={{
+                    visibility: index < min ? "hidden" : "visible",
+                  }}
+                  {...props.rendererProps?.actionRemove}
+                >
+                  {props.rendererProps?.iconRemove ?? <IconMinus />}
+                </ActionIcon>
+              </Group>
+            </Grid.Col>
+          </Grid>
+        );
+      })}
+      {props.pageInfo && props.pageInfo.pageCount > 1 && (
+        <Group
+          justify="space-between"
+          mt="xs"
+          {...props.rendererProps?.paginationGroup}
+        >
+          <Text size="xs" c="dimmed" {...props.rendererProps?.paginationText}>
+            {formatPageText(props)}
+          </Text>
+          <Pagination
+            size="xs"
+            total={props.pageInfo.pageCount}
+            value={props.pageInfo.page}
+            onChange={props.onPageChange}
+            {...props.rendererProps?.pagination}
+          />
+        </Group>
+      )}
     </Input.Wrapper>
   );
+}
+
+function formatPageText(
+  props: FhirInputArrayRendererProps<MantineFhirInputArrayProps>,
+): string {
+  const pageInfo = props.pageInfo;
+  if (!pageInfo) {
+    return "";
+  }
+
+  const from = pageInfo.count === 0 ? 0 : pageInfo.offset + 1;
+  const to = pageInfo.offset + pageInfo.countOnPage;
+
+  return (props.pagination?.pageTextTemplate ?? "{from}-{to} of {total}")
+    .replace("{from}", String(from))
+    .replace("{to}", String(to))
+    .replace("{total}", String(pageInfo.count));
 }
 
 export interface MantineFhirInputArrayProps {
@@ -93,4 +163,9 @@ export interface MantineFhirInputArrayProps {
   iconAdd?: ReactNode | null | undefined;
   actionIconRemove?: ActionIconProps | null | undefined;
   iconRemove?: ReactNode | null | undefined;
+  filterGroup?: GroupProps | null | undefined;
+  filterInput?: TextInputProps | null | undefined;
+  paginationGroup?: GroupProps | null | undefined;
+  paginationText?: TextProps | null | undefined;
+  pagination?: PaginationProps | null | undefined;
 }
